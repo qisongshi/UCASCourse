@@ -100,7 +100,7 @@ public class Hw1Grp4 {
                     }
                     break;
                 case "lt":
-                    if (Double.parseDouble(currentRow[selectCol]) <= selectValue) {
+                    if (Double.parseDouble(currentRow[selectCol]) < selectValue) {
                         String tmp_str = "";
                         for (String str : distinctCol) {
                             tmp_str += currentRow[Integer.parseInt(str.substring(1))] + ",";
