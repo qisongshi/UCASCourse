@@ -69,12 +69,14 @@ int main(int argc, char **argv)
 
     // 从二进制文件中读取矩阵数据
     FILE *file = fopen("random_matrix.bin", "rb");
-    if (file != NULL) {
+    if (file != NULL)
+    {
         fread(matrix, sizeof(int32_t), rows * cols, file);
         fclose(file);
         printf("Matrix has been read from random_matrix.bin\n");
-
-    } else {
+    }
+    else
+    {
         printf("Error opening file for reading\n");
     }
 
@@ -129,25 +131,31 @@ int main(int argc, char **argv)
     MPI_Barrier(MPI_COMM_WORLD);
 
     MPI_Gather(phase2_matrix_2, rows * cols / cf / 4, MPI_INT, result_matrix, rows * cols / cf / 4, MPI_INT, 0, MPI_COMM_WORLD);
-
+    if(rank == 0)
+    {
+        end_perf("MPI");
+    }
     free(phase1_matrix_1);
     free(phase1_matrix_2);
     free(phase2_matrix_1);
     free(phase2_matrix_2);
 
-    MPI_Finalize();
-
-    end_perf("MPI");
-
-    // 将矩阵写入二进制文件
-    file = fopen("result_matrix.bin", "wb");
-    if (file != NULL) {
-        fwrite(result_matrix, sizeof(int32_t), rows / 2 * cols / 2, file);
-        fclose(file);
-        printf("Matrix has been written to result_matrix.bin\n");
-    } else {
-        printf("Error opening file for writing\n");
+    if (rank == 0)
+    {
+        // 将矩阵写入二进制文件
+        file = fopen("result_matrix.bin", "wb");
+        if (file != NULL)
+        {
+            fwrite(result_matrix, sizeof(int32_t), rows / 2 * cols / 2, file);
+            fclose(file);
+            printf("Matrix has been written to result_matrix.bin\n");
+        }
+        else
+        {
+            printf("Error opening file for writing\n");
+        }
     }
+    MPI_Finalize();
 
     // 释放内存
     free(matrix);
