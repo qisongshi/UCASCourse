@@ -133,18 +133,18 @@ def workloadf(
 workloads = [workloada, workloadb, workloadc, workloadd, workloade, workloadf]
 
 recordsizes = [2, 4, 8, 16]
-operationscales = [1.5]
+operationsizes = [1000000]
 zipfconstants = [0, 0.2, 0.4, 0.6, 0.8, 0.99]
 
 # rootdir = os.path.join("ycsbtest")
 rootdir = os.path.join(os.environ["HOME"], "ycsbtest")
-workloaddir = os.path.join(rootdir, "dataset")
+workloaddir = os.path.join(rootdir, "workloads")
+os.system(f"rm -r {workloaddir}")
 os.makedirs(workloaddir, mode=0o755, exist_ok=True)
 for workload in workloads:
     for recordsize in recordsizes:
-        for operationscale in operationscales:
+        for operationsize in operationsizes:
             for zipfconstant in zipfconstants:
-                filename = "-".join([str(recordsize), str(operationscale), str(zipfconstant), workload.__name__])
+                filename = "-".join([str(recordsize), str(operationsize), str(zipfconstant), workload.__name__])
                 __recordsize = recordsize * 1024 * 1024 * 1024
-                operationsize = int(__recordsize * operationscale)
                 workload(os.path.join(workloaddir, filename), zipfconstant, __recordsize, operationsize)
