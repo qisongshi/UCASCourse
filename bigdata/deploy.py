@@ -2,6 +2,10 @@ import os
 import sys
 import yaml
 
+rootdir = os.path.join(os.environ["HOME"], "ycsbtest")
+workloaddir = os.path.join(rootdir, "workloads")
+resultdir = os.path.join(rootdir, "results")
+
 if __name__ == '__main__':
     with open("node.yaml", "r") as file:
         nodes = yaml.load(file)
@@ -42,6 +46,24 @@ if __name__ == '__main__':
         os.system("/root/hbase/start-master.sh")
         # for i in range(num_slaves):
         #     os.system(f"ssh slave{i} /root/hdfs/start-dfs.sh")
+    elif (sys.argv[1] == "pretest"):
+        os.system("hbase shell < ./pretest.cmd")
+    elif (sys.argv[1] == "test"):
+        if os.path.exists(resultdir):
+            os.system(f"rm -r {resultdir}")
+        os.makedirs(resultdir, mode=0o755)
+        mp = {}
+        for _, _, files in os.walk(workloaddir):
+            for workloadfile in files:
+                elems = workloadfile.split('-')
+                mp.setdefault(elems[0], [])
+                mp[elems[0]].append(workloadfile)
+        for key, files in mp.items():
+            print(f"load {files[0]}")
+            os.system(f"/root/ycsb-0.17.0/bin/ycsb load hbase20 -P {os.path.join(workloaddir, files[0])} -cp /HBASE-HOME-DIR/conf -p table=usertable -p columnfamily=family")
+            for file in files:
+                print(f"run {file}")
+                os.system(f"/root/ycsb-0.17.0/bin/ycsb run hbase20 -P {os.path.join(workloaddir, file)} -cp /HBASE-HOME-DIR/conf -p table=usertable -p columnfamily=family > {os.path.join(resultdir, file)} 2> {os.path.join(resultdir, file)}")
     elif (sys.argv[1] == "stop"):
         os.system("stop-hbase.sh")
         os.system("stop-dfs.sh")
@@ -54,4 +76,3 @@ if __name__ == '__main__':
         os.system("")
     else:
         print(f"unknown command {sys.argv[1]}")
-            
