@@ -60,10 +60,10 @@ if __name__ == '__main__':
                 mp[elems[0]].append(workloadfile)
         for key, files in mp.items():
             print(f"load {files[0]}")
-            os.system(f"/root/ycsb-0.17.0/bin/ycsb load hbase20 -P {os.path.join(workloaddir, files[0])} -cp /HBASE-HOME-DIR/conf -p table=usertable -p columnfamily=family")
+            os.system(f"/root/ycsb-0.17.0/bin/ycsb load hbase20 -P {os.path.join(workloaddir, files[0])} -p table=usertable -p columnfamily=family")
             for file in files:
                 print(f"run {file}")
-                os.system(f"/root/ycsb-0.17.0/bin/ycsb run hbase20 -P {os.path.join(workloaddir, file)} -cp /HBASE-HOME-DIR/conf -p table=usertable -p columnfamily=family > {os.path.join(resultdir, file)} 2> {os.path.join(resultdir, file)}")
+                os.system(f"/root/ycsb-0.17.0/bin/ycsb run hbase20 -P {os.path.join(workloaddir, file)} -p table=usertable -p columnfamily=family > {os.path.join(resultdir, file)} 2> {os.path.join(resultdir, file)}")
     elif (sys.argv[1] == "stop"):
         os.system("stop-hbase.sh")
         os.system("stop-dfs.sh")

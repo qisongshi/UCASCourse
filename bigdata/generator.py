@@ -146,5 +146,6 @@ for workload in workloads:
         for operationsize in operationsizes:
             for zipfconstant in zipfconstants:
                 filename = "-".join([str(recordsize), str(operationsize), str(zipfconstant), workload.__name__])
-                __recordsize = recordsize * 1024 * 1024 * 1024
+                print(filename, str(operationsize), operationsize)
+                __recordsize = recordsize * 1024 * 1024
                 workload(os.path.join(workloaddir, filename), zipfconstant, __recordsize, operationsize)
